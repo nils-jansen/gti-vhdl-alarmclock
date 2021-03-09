@@ -90,6 +90,7 @@ BEGIN
               -- add one hour
               hours <= hours + 1;
             END IF;
+
           ELSE
             -- add one minute
             mins <= mins + 1;
@@ -103,10 +104,10 @@ BEGIN
       END IF;
 
       -- TODO: Pruefe, ob Alarm ausgeloest werden muss
-      IF (sw(0) = '1') THEN -- Only trigger if alarm switch is on
-        IF (mins = wmins AND hours = whours) THEN -- Compare current to set time
-          alarm <= '1'; -- Trigger alarm
-        END IF;
+      IF (sw(0) = '1' AND mins = wmins AND hours = whours) THEN -- Switch on && compare current to set time
+        alarm <= '1'; -- Trigger alarm
+      ELSE
+        alarm <= '0'; -- ?
       END IF;
 
       CASE current_state IS
@@ -115,10 +116,11 @@ BEGIN
           -- TODO: Setze naechsten Zustand
           IF (btn_triggered(0) = '1' AND btn_triggered(1) = '0') THEN
             next_state := SET_TIME; -- BTN0 -> SetTime
-          END IF;
-
-          IF (btn_triggered(0) = '0' AND btn_triggered(1) = '1') THEN
+          ELSIF (btn_triggered(0) = '0' AND btn_triggered(1) = '1') THEN
             next_state := SET_ALARM; -- BTN1 -> SetAlarm
+          ELSE
+            next_state := NTIME;
+
           END IF;
 
           -- Zustand SetTime
@@ -126,10 +128,10 @@ BEGIN
           -- TODO: Setze naechsten Zustand
           IF (btn_triggered(0) = '1' AND btn_triggered(1) = '0') THEN
             next_state := NTIME; -- BTN0 -> Time
-          END IF;
-
-          IF (btn_triggered(0) = '0' AND btn_triggered(1) = '1') THEN
+          ELSIF (btn_triggered(0) = '0' AND btn_triggered(1) = '1') THEN
             next_state := SET_ALARM; -- BTN 1 -> SetAlarm
+          ELSE
+            next_state := SET_TIME;
           END IF;
 
           -- TODO: Setze Minute und Stunde mit BTN(2) bzw. BTN(3)
@@ -137,7 +139,7 @@ BEGIN
           -- Minutes
           IF (fasttrigger = '1' AND btn_triggered(2) = '1') THEN
             IF (mins = 59) THEN
-              mins <= 0;
+              mins <= 0; -- set 0
             ELSE
               mins <= mins + 1; -- increment
             END IF;
@@ -146,7 +148,7 @@ BEGIN
           -- Hours
           IF (fasttrigger = '1' AND btn_triggered(3) = '1') THEN
             IF (hours = 23) THEN
-              hours <= 0;
+              hours <= 0; -- set 0
             ELSE
               hours <= hours + 1; -- increment
             END IF;
@@ -157,17 +159,17 @@ BEGIN
           -- TODO: Setze naechsten Zustand
           IF btn_triggered(0) = '1' AND btn_triggered(1) = '0' THEN
             next_state := SET_TIME; -- BTN0 -> SetTime
-          END IF;
-
-          IF btn_triggered(0) = '0' AND btn_triggered(1) = '1' THEN
+          ELSIF btn_triggered(0) = '0' AND btn_triggered(1) = '1' THEN
             next_state := NTIME; -- BTN1 -> Time
+          ELSE
+            next_state := SET_ALARM;
           END IF;
 
           -- TODO: Setze Minute und Stunde mit BTN(2) bzw. BTN(3)
           -- Minutes
           IF (fasttrigger = '1' AND btn_triggered(2) = '1') THEN
             IF (wmins = 59) THEN
-              wmins <= 0;
+              wmins <= 0; -- set 0
             ELSE
               wmins <= wmins + 1; -- increment
             END IF;
@@ -176,9 +178,9 @@ BEGIN
           -- Hours
           IF (fasttrigger = '1' AND btn_triggered(3) = '1') THEN
             IF (whours = 23) THEN
-              whours <= 0;
+              whours <= 0; -- set 0
             ELSE
-              whours <= hours + 1; -- increment
+              whours <= whours + 1; -- increment
             END IF;
           END IF;
 
@@ -186,7 +188,6 @@ BEGIN
         WHEN OTHERS =>
           next_state := NTIME;
       END CASE;
-
       current_state <= next_state;
     END IF;
   END PROCESS FSM;
