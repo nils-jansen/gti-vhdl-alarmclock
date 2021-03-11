@@ -137,7 +137,7 @@ BEGIN
           -- TODO: Setze Minute und Stunde mit BTN(2) bzw. BTN(3)
 
           -- Minutes
-          IF (fasttrigger = '1' AND btn_triggered(2) = '1') THEN
+          IF (btn_triggered(2) = '1' OR (fasttrigger = '1' AND btn(2) = '1')) THEN
             IF (mins = 59) THEN
               mins <= 0; -- set 0
             ELSE
@@ -146,7 +146,7 @@ BEGIN
           END IF;
 
           -- Hours
-          IF (fasttrigger = '1' AND btn_triggered(3) = '1') THEN
+          IF (btn_triggered(3) = '1' OR (fasttrigger = '1' AND btn(3) = '1')) THEN
             IF (hours = 23) THEN
               hours <= 0; -- set 0
             ELSE
@@ -167,7 +167,7 @@ BEGIN
 
           -- TODO: Setze Minute und Stunde mit BTN(2) bzw. BTN(3)
           -- Minutes
-          IF (fasttrigger = '1' AND btn_triggered(2) = '1') THEN
+          IF (btn_triggered(2) = '1' OR (fasttrigger = '1' AND btn(2) = '1')) THEN
             IF (wmins = 59) THEN
               wmins <= 0; -- set 0
             ELSE
@@ -176,7 +176,7 @@ BEGIN
           END IF;
 
           -- Hours
-          IF (fasttrigger = '1' AND btn_triggered(3) = '1') THEN
+          IF (btn_triggered(3) = '1' OR (fasttrigger = '1' AND btn(3) = '1')) THEN
             IF (whours = 23) THEN
               whours <= 0; -- set 0
             ELSE
